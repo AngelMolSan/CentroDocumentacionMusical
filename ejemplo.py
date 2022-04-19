@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 import os, sys
 from xml.dom import minidom
+'''
+    Esta parte está fija y va cabiando dependiendo si se trata de un legado u otro
+    print("\t<title>Festival de Música Tradicional de La Alpujarra</title>")
+    print("\t<link>https://www.centrodedocumentacionmusicaldeandalucia.es/-/fondo-festival-de-musica-tradicional-de-la-alpujarra</link>")
+    print("\t<description>El Festival de Música Tradicional de la Alpujarra, representa la principal manifestación cultural y musical del folclore alpujarreño. Es portador y conservador de la memoria cultura, folclórica e histórica de la comarca. Se celebra con carácter anual desde 1982, el segundo domingo  de agosto, en alguna localidad de las Alpujarra granadina o almeriense, que varía para cada ocasión. Tiene carácter de concurso, otorgándose varios premios según especialidades.</description>")
 
+    print("\t<title>Legado Manuel Castillo</title>")
+    print("\t<link>https://www.centrodedocumentacionmusicaldeandalucia.es/-/legado-manuel-castillo</link>")
+    print("\t<description>Fue una figura dominante de la vida musical andaluza durante la segunda mitad del siglo XX, perteneciente a la Generación del 51.Su producción comprende cerca de 130 obras, abarcando la mayoría de los géneros musicales y estilos, a excepción del género operístico: mención especial merece su obra para piano.</description>")
+'''
 def analiza_datafield(datafield, lista_codes):
         '''
         En esta función analizamos todas los datafield que hay dentro de cada record.
@@ -11,8 +20,8 @@ def analiza_datafield(datafield, lista_codes):
         texto = ''
         for subfield in datafields:
             letra_subfield = subfield._attrs['code'].nodeValue
+            i += 1
             if letra_subfield in lista_codes:
-                i += 1
                 subfield = datafield.getElementsByTagName("subfield")[i]
                 texto += subfield.firstChild.data
         return texto
@@ -26,9 +35,9 @@ def carga(fichero):
     print(f'{"<?xml "}',versionA,encoding,' ?>')
     print(versionB)
     print("<channel>")
-    print("\t<title>Festival de Música Tradicional de La Alpujarra</title>")
-    print("\t<link>https://www.centrodedocumentacionmusicaldeandalucia.es/-/fondo-festival-de-musica-tradicional-de-la-alpujarra</link>")
-    print("\t<description>El Festival de Música Tradicional de la Alpujarra, representa la principal manifestación cultural y musical del folclore alpujarreño. Es portador y conservador de la memoria cultura, folclórica e histórica de la comarca. Se celebra con carácter anual desde 1982, el segundo domingo  de agosto, en alguna localidad de las Alpujarra granadina o almeriense, que varía para cada ocasión. Tiene carácter de concurso, otorgándose varios premios según especialidades.</description>")
+    print("\t<title>Legado Rafael Díaz</title>")
+    print("\t<link>https://www.centrodedocumentacionmusicaldeandalucia.es/-/legado-rafael-diaz</link>")
+    print("\t<description>Rafael Díaz nació en Málaga en 1943 y en su Conservatorio hizo la carrera de Piano y Clarinete, posteriormente pasó al Conservatorio de Sevilla donde realizó con Manuel Castillo la carrera de Composición obteniendo Premio Fin de Carrera en Composición y con Manuel Galduf la carrera de Dirección de Orquesta.</description>")
     
     records = xml.getElementsByTagName("record")
     for record in records:
@@ -36,6 +45,7 @@ def carga(fichero):
         print("\t<item>")
         '''
         Si es datafield tag='245' que nos muestre el code a y b
+        Si es datafield tag='260' que nos muestre el code a,b y c
         Si es datafield tag='505' que nos muestre el a y/o si hay tag='111' que muestre el code a,n,d y c
         '''
         descripcion = ''
@@ -43,6 +53,8 @@ def carga(fichero):
             tag = datafield._attrs['tag'].value
             if tag == '245':
                 titulo = analiza_datafield(datafield, ['a','b'])
+            if tag == '260':
+                descripcion += analiza_datafield(datafield, ['a','b','c'])
             if tag == '505':
                 descripcion += analiza_datafield(datafield, ['a'])
             if tag == '111':
@@ -59,6 +71,8 @@ def carga(fichero):
             print(f"\t\t<description>{descripcion}</description>")
         
         print("\t</item>")
+    print("</channel>")
+    print("</rss>")
 
 
 if __name__ == '__main__':
